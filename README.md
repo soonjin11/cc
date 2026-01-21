@@ -37,16 +37,41 @@ pip install -r requirements.txt
 
 ## Usage
 
-### Basic Usage
+### Web Interface (Recommended)
 
-Convert a document to Markdown:
+The easiest way to use this tool is through the web interface:
+
+1. Start the web server:
+```bash
+python app.py
+```
+
+2. Open your browser and go to:
+```
+http://localhost:5000
+```
+
+3. Upload your document (PDF, DOCX, XLSX, or PPTX) through the web interface
+
+4. The converted Markdown file will automatically download
+
+The web interface provides:
+- Drag-and-drop file upload
+- Real-time file validation
+- Instant download of converted files
+- Beautiful, user-friendly interface
+- Support for files up to 50MB
+
+### Command-line Interface
+
+Convert a document to Markdown using CLI:
 ```bash
 python main.py path/to/document.pdf
 ```
 
 The output will be saved to `./output/document.md`
 
-### Advanced Usage
+#### Advanced CLI Usage
 
 Specify a custom output name:
 ```bash
@@ -58,7 +83,7 @@ Specify a custom output directory:
 python main.py document.xlsx --output-dir ./my_output
 ```
 
-### Command-line Options
+#### Command-line Options
 
 ```
 usage: main.py [-h] [-o OUTPUT_NAME] [--output-dir OUTPUT_DIR] file
@@ -102,9 +127,12 @@ python main.py uploads/presentation.pptx
 
 ```
 .
-├── main.py                 # Main entry point
-├── requirements.txt        # Python dependencies
-├── README.md              # This file
+├── app.py                 # Web interface (Flask app)
+├── main.py                # Command-line interface
+├── requirements.txt       # Python dependencies
+├── README.md             # This file
+├── templates/
+│   └── index.html        # Web UI template
 ├── src/
 │   ├── __init__.py
 │   ├── document_processor.py  # Main processor class
@@ -115,8 +143,8 @@ python main.py uploads/presentation.pptx
 │       ├── docx_parser.py     # DOCX parser
 │       ├── xlsx_parser.py     # XLSX parser
 │       └── pptx_parser.py     # PPTX parser
-├── uploads/               # Place your documents here (optional)
-└── output/                # Generated markdown files
+├── uploads/              # Temporary upload directory
+└── output/               # Generated markdown files
 ```
 
 ## How It Works
@@ -134,6 +162,7 @@ python main.py uploads/presentation.pptx
 - `openpyxl` - Excel spreadsheet processing
 - `python-pptx` - PowerPoint presentation processing
 - `Pillow` - Image processing support
+- `Flask` - Web interface framework
 
 ## Output Format
 
@@ -191,5 +220,5 @@ Possible future features:
 - OCR support for scanned PDFs
 - HTML output format
 - Batch processing
-- Web interface
 - More format support (ODT, RTF, etc.)
+- API endpoint support
