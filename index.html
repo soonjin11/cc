@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>巴黎荷风小院 · Le Petit Jardin du Lotus</title>
+<meta name="description" content="巴黎荷风小院 —— 在塞纳河畔，寻一方东方庭院。茶会、雅集、料理与艺术沙龙。" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Serif+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf6ee;
+    --bg-soft: #f2ecdf;
+    --ink: #1f1c18;
+    --ink-soft: #5a5246;
+    --rule: #d9cfbd;
+    --leaf: #5d7a5a;
+    --lotus: #c2849a;
+    --accent: #8a6a3b;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Noto Serif SC", "Cormorant Garamond", Georgia, serif;
+    font-weight: 400;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a { color: var(--ink); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color .2s; }
+  a:hover { border-color: var(--ink); }
+  .fr { font-family: "Cormorant Garamond", Georgia, serif; letter-spacing: .02em; }
+  .muted { color: var(--ink-soft); }
+
+  /* Layout */
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+  header.site {
+    padding: 28px 0;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--rule);
+  }
+  header .logo { font-weight: 500; font-size: 18px; letter-spacing: .08em; }
+  header .logo small { display: block; font-size: 11px; letter-spacing: .3em; color: var(--ink-soft); margin-top: 2px; text-transform: uppercase; }
+  nav ul { list-style: none; padding: 0; margin: 0; display: flex; gap: 28px; font-size: 14px; letter-spacing: .15em; }
+  nav a { color: var(--ink-soft); }
+  nav a:hover { color: var(--ink); }
+
+  /* Hero */
+  .hero { padding: 110px 0 90px; position: relative; }
+  .hero .eyebrow {
+    font-family: "Cormorant Garamond", serif;
+    font-style: italic; font-size: 18px; color: var(--accent);
+    letter-spacing: .08em; margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-weight: 400;
+    font-size: clamp(42px, 6vw, 76px);
+    line-height: 1.15;
+    letter-spacing: .04em;
+    margin: 0 0 20px;
+  }
+  .hero h1 .sub {
+    display: block;
+    font-family: "Cormorant Garamond", serif;
+    font-style: italic;
+    font-size: .45em;
+    color: var(--ink-soft);
+    letter-spacing: .08em;
+    margin-top: 14px;
+  }
+  .hero p.lede {
+    font-size: 18px;
+    max-width: 38em;
+    color: var(--ink-soft);
+    margin: 18px 0 32px;
+  }
+  .hero .cta {
+    display: inline-block;
+    padding: 12px 28px;
+    border: 1px solid var(--ink);
+    font-size: 14px; letter-spacing: .25em;
+    text-transform: uppercase;
+  }
+  .hero .cta:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+  .lotus {
+    position: absolute; right: -40px; top: 80px;
+    width: 260px; opacity: .55; pointer-events: none;
+  }
+
+  /* Section */
+  section { padding: 80px 0; border-top: 1px solid var(--rule); }
+  section .kicker {
+    font-family: "Cormorant Garamond", serif;
+    font-style: italic; color: var(--accent);
+    letter-spacing: .15em; font-size: 14px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  section h2 {
+    font-weight: 400;
+    font-size: clamp(28px, 3.5vw, 40px);
+    letter-spacing: .05em;
+    margin: 0 0 28px;
+  }
+
+  /* About */
+  .about-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 60px; align-items: start; }
+  .about p { margin: 0 0 16px; }
+  .about .meta { border-left: 1px solid var(--rule); padding-left: 24px; font-size: 15px; color: var(--ink-soft); }
+  .about .meta dt { font-family: "Cormorant Garamond", serif; letter-spacing: .18em; font-size: 12px; text-transform: uppercase; color: var(--accent); margin-top: 16px; }
+  .about .meta dd { margin: 4px 0 0; }
+  .about .meta dl { margin: 0; }
+
+  /* Experience cards */
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 24px; }
+  .card {
+    background: var(--bg-soft);
+    padding: 28px 22px;
+    border: 1px solid transparent;
+    transition: border-color .2s, transform .2s;
+  }
+  .card:hover { border-color: var(--rule); transform: translateY(-2px); }
+  .card .num { font-family: "Cormorant Garamond", serif; font-style: italic; color: var(--accent); letter-spacing: .15em; font-size: 13px; }
+  .card h3 { font-weight: 500; font-size: 19px; margin: 8px 0 10px; letter-spacing: .05em; }
+  .card p { margin: 0; color: var(--ink-soft); font-size: 14.5px; line-height: 1.7; }
+
+  /* Gallery */
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-auto-rows: 140px;
+    gap: 12px;
+    margin-top: 28px;
+  }
+  .tile {
+    background: var(--bg-soft);
+    border: 1px solid var(--rule);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink-soft); font-family: "Cormorant Garamond", serif; font-style: italic;
+    overflow: hidden; position: relative;
+  }
+  .tile:nth-child(1) { grid-column: span 3; grid-row: span 2; }
+  .tile:nth-child(2) { grid-column: span 3; }
+  .tile:nth-child(3) { grid-column: span 2; }
+  .tile:nth-child(4) { grid-column: span 1; }
+  .tile:nth-child(5) { grid-column: span 3; }
+  .tile:nth-child(6) { grid-column: span 3; }
+  .tile span { position: relative; z-index: 1; letter-spacing: .1em; }
+  .tile::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(93,122,90,.18), transparent 60%),
+      radial-gradient(circle at 70% 70%, rgba(194,132,154,.15), transparent 60%);
+  }
+
+  /* Visit */
+  .visit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
+  .visit p { margin: 0 0 12px; color: var(--ink-soft); }
+  .visit .label { font-family: "Cormorant Garamond", serif; font-style: italic; color: var(--accent); letter-spacing: .12em; font-size: 13px; text-transform: uppercase; margin-top: 18px; }
+  .visit .val { color: var(--ink); font-size: 16px; margin-top: 2px; }
+
+  /* Footer */
+  footer.site {
+    padding: 40px 0 60px;
+    border-top: 1px solid var(--rule);
+    font-size: 13px;
+    color: var(--ink-soft);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+
+  /* Responsive */
+  @media (max-width: 860px) {
+    nav ul { display: none; }
+    .about-grid, .visit-grid { grid-template-columns: 1fr; gap: 32px; }
+    .cards { grid-template-columns: repeat(2, 1fr); }
+    .gallery { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 120px; }
+    .tile:nth-child(n) { grid-column: span 1; grid-row: span 1; }
+    .tile:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+    .lotus { width: 180px; right: -60px; top: 40px; opacity: .35; }
+    .hero { padding: 70px 0 60px; }
+    section { padding: 56px 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="site">
+    <div class="logo">
+      荷风小院
+      <small>Le Jardin du Lotus · Paris</small>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#about">关于</a></li>
+        <li><a href="#experience">体验</a></li>
+        <li><a href="#gallery">小院</a></li>
+        <li><a href="#visit">来访</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="hero" style="border-top:none;">
+    <svg class="lotus" viewBox="0 0 200 200" aria-hidden="true">
+      <g fill="none" stroke="#5d7a5a" stroke-width="1.2" opacity=".9">
+        <ellipse cx="100" cy="100" rx="70" ry="26" transform="rotate(-30 100 100)"/>
+        <ellipse cx="100" cy="100" rx="70" ry="26" transform="rotate(30 100 100)"/>
+        <ellipse cx="100" cy="100" rx="70" ry="26"/>
+      </g>
+      <g fill="#c2849a" opacity=".85">
+        <path d="M100 70 C112 78 112 96 100 104 C88 96 88 78 100 70 Z"/>
+        <path d="M82 82 C94 86 98 100 92 112 C80 108 76 94 82 82 Z"/>
+        <path d="M118 82 C124 94 120 108 108 112 C102 100 106 86 118 82 Z"/>
+      </g>
+      <circle cx="100" cy="94" r="3.5" fill="#8a6a3b"/>
+    </svg>
+    <div class="eyebrow">Un jardin d'Orient au cœur de Paris</div>
+    <h1>
+      荷风小院
+      <span class="sub">在塞纳河畔，寻一方东方庭院</span>
+    </h1>
+    <p class="lede">
+      这里是一处以"荷"为名的东方小院 —— 藏在巴黎街巷之间，糅合江南园林的素静与法式沙龙的闲情。
+      我们以茶会友，以艺会心，邀你在这里度过一段缓慢而丰盈的时光。
+    </p>
+    <a class="cta" href="#visit">预约来访 · Réserver</a>
+  </section>
+
+  <section id="about" class="about">
+    <div class="about-grid">
+      <div>
+        <div class="kicker">À propos</div>
+        <h2>关于小院</h2>
+      </div>
+      <div>
+        <p>
+          荷风小院诞生于一个朴素的心愿：在远离故土的巴黎，保留一处可以静坐、煮茶、读书、会友的东方角落。
+          木构、青瓦、白墙、石景，配以法式庭院的长椅与铁艺，东西方的呼吸在这里自然交汇。
+        </p>
+        <p>
+          我们不做喧嚣的景点，只接待真正愿意放慢脚步的朋友。
+          一次雅集、一场茶会、一顿家宴，皆可预约。
+        </p>
+        <dl class="meta">
+          <dt>Fondé en</dt><dd>2024 · 巴黎</dd>
+          <dt>Ambiance</dt><dd>东方美学 · 法式闲情</dd>
+          <dt>Capacité</dt><dd>10 – 20 位来宾</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section id="experience">
+    <div class="kicker">Expériences</div>
+    <h2>四时之乐</h2>
+    <div class="cards">
+      <div class="card">
+        <div class="num">01 · Thé</div>
+        <h3>茶会雅集</h3>
+        <p>一席茶、一炉香、一页书。春碧螺、夏白毫、秋乌龙、冬老普，依时令奉茶。</p>
+      </div>
+      <div class="card">
+        <div class="num">02 · Cuisine</div>
+        <h3>东方家宴</h3>
+        <p>以法国当季食材，重译一桌江南与川粤的私房味道，小院主理人亲厨。</p>
+      </div>
+      <div class="card">
+        <div class="num">03 · Art</div>
+        <h3>艺术沙龙</h3>
+        <p>书法、古琴、插花、水墨 —— 不定期邀请中法艺术家驻院，作小型分享。</p>
+      </div>
+      <div class="card">
+        <div class="num">04 · Séjour</div>
+        <h3>小住数日</h3>
+        <p>两间客房，可供短居。清晨推窗见庭院，夜深闻风拂竹，予人片刻归处。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="gallery">
+    <div class="kicker">Le Jardin</div>
+    <h2>小院一隅</h2>
+    <div class="gallery">
+      <div class="tile"><span>庭院 · La cour</span></div>
+      <div class="tile"><span>茶室 · Salon de thé</span></div>
+      <div class="tile"><span>书房 · Bibliothèque</span></div>
+      <div class="tile"><span>灶间 · Cuisine</span></div>
+      <div class="tile"><span>石景 · Rocaille</span></div>
+      <div class="tile"><span>客房 · Chambre</span></div>
+    </div>
+    <p class="muted" style="margin-top:20px; font-size:14px;">
+      * 图片稍后补齐；目前以文字占位，便于快速上线。
+    </p>
+  </section>
+
+  <section id="visit" class="visit">
+    <div class="visit-grid">
+      <div>
+        <div class="kicker">Nous rendre visite</div>
+        <h2>来访与联络</h2>
+        <p>
+          小院采用预约制。请提前一周告知人数、日期与期待的体验（茶会 / 家宴 / 雅集 / 小住），我们会为你安排合适的时间与场景。
+        </p>
+      </div>
+      <div>
+        <div class="label">Adresse</div>
+        <div class="val">Paris 11ᵉ · 详细地址于预约后告知</div>
+        <div class="label">Contact</div>
+        <div class="val">hefeng@example.com</div>
+        <div class="label">微信 · WeChat</div>
+        <div class="val">hefeng_paris</div>
+        <div class="label">Horaires</div>
+        <div class="val">周三至周日 · 14h – 22h</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site">
+    <div>© 2026 荷风小院 · Le Petit Jardin du Lotus</div>
+    <div class="fr"><em>Fait avec soin à Paris</em></div>
+  </footer>
+
+</div>
+
+</body>
+</html>
