@@ -1,15 +1,18 @@
 """
-Batch annotation of customer-service chat sessions using Claude.
+Batch annotation of customer-service chat sessions.
+
+Default backend: SiliconFlow (OpenAI-compatible) with DeepSeek-V3.
+Switchable to any OpenAI-compatible provider via --base-url.
 
 Input:  raw chat JSON (list of sessions, see dataset structure)
-Output: annotated JSON (list of session annotations conforming to schema v0.1)
+Output: annotated JSONL (one annotation per line, schema v0.1)
 
 Run:
-    export ANTHROPIC_API_KEY=...
+    export SILICONFLOW_API_KEY=...
     python annotate_batch.py \
         --input  /path/to/chat_20260402_judged.json \
         --output ./annotated_full.jsonl \
-        --model  claude-sonnet-4-6 \
+        --model  deepseek-ai/DeepSeek-V3 \
         --max-workers 8
 
 Resumes by skipping session_ids already present in the output JSONL.
@@ -18,7 +21,7 @@ from __future__ import annotations
 import argparse, json, os, sys, time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from anthropic import Anthropic, APIError
+from openai import OpenAI, APIError
 
 SCHEMA_PROMPT = """You are an analyst extracting *diagnostic-process* signals from a customer-service chat. Output ONE JSON object conforming to the schema below. Do NOT wrap with markdown fences.
 
@@ -71,22 +74,22 @@ def build_user_prompt(session: dict) -> str:
     return "\n".join(lines)
 
 
-def annotate_session(client: Anthropic, model: str, session: dict, retries: int = 3) -> dict:
+def annotate_session(client: OpenAI, model: str, session: dict, retries: int = 3) -> dict:
     user = build_user_prompt(session)
     last_err = None
     for attempt in range(retries):
         try:
-            resp = client.messages.create(
+            resp = client.chat.completions.create(
                 model=model,
                 max_tokens=4096,
-                system=[{
-                    "type": "text",
-                    "text": SCHEMA_PROMPT,
-                    "cache_control": {"type": "ephemeral"},
-                }],
-                messages=[{"role": "user", "content": user}],
+                temperature=0.2,
+                response_format={"type": "json_object"},
+                messages=[
+                    {"role": "system", "content": SCHEMA_PROMPT},
+                    {"role": "user", "content": user},
+                ],
             )
-            text = "".join(b.text for b in resp.content if b.type == "text").strip()
+            text = (resp.choices[0].message.content or "").strip()
             if text.startswith("```"):
                 text = text.strip("`")
                 if text.startswith("json"):
@@ -123,12 +126,18 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--input", required=True)
     ap.add_argument("--output", required=True)
-    ap.add_argument("--model", default="claude-sonnet-4-6")
+    ap.add_argument("--model", default="deepseek-ai/DeepSeek-V3")
+    ap.add_argument("--base-url", default="https://api.siliconflow.cn/v1")
+    ap.add_argument("--api-key-env", default="SILICONFLOW_API_KEY",
+                    help="env var holding the API key")
     ap.add_argument("--max-workers", type=int, default=8)
     ap.add_argument("--limit", type=int, default=0, help="0 = all")
     args = ap.parse_args()
 
-    client = Anthropic()
+    api_key = os.environ.get(args.api_key_env)
+    if not api_key:
+        sys.exit(f"error: env var {args.api_key_env} not set")
+    client = OpenAI(api_key=api_key, base_url=args.base_url)
     sessions = json.loads(Path(args.input).read_text())
     out_path = Path(args.output)
     done = load_done(out_path)

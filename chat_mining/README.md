@@ -38,20 +38,26 @@ chat_mining/
 
 ### 3. 批量标注 (待跑)
 
+默认走硅基流动（OpenAI 兼容接口）+ DeepSeek-V3：
+
 ```bash
-export ANTHROPIC_API_KEY=...
+pip install openai
+export SILICONFLOW_API_KEY=sk-...
 python chat_mining/scripts/annotate_batch.py \
     --input  /path/to/chat_20260402_judged.json \
     --output chat_mining/reports/annotated_full.jsonl \
-    --model  claude-sonnet-4-6 \
+    --model  deepseek-ai/DeepSeek-V3 \
     --max-workers 8
 ```
 
+切其它 OpenAI 兼容供应商：`--base-url https://... --api-key-env XXX_API_KEY`。
+
 特性：
-- prompt cache 复用 schema 部分，省 token
+- 复用 system prompt（硅基自动前缀缓存命中）
+- `response_format={"type":"json_object"}` 强约束 JSON 输出
 - 失败重试 + 指数退避
 - 按 session_id 续跑（jsonl 增量写入）
-- 总量 ~806，预计 1–2 小时单机跑完
+- 总量 ~806，建议先 `--limit 50` 抽检质量
 
 ### 4. 聚合报表
 
