@@ -1,0 +1,385 @@
+[
+  {
+    "_dataset_idx": 167,
+    "session_id": "from_data[167]",
+    "category": "AI计算服务",
+    "is_diagnostic": true,
+    "is_transactional": false,
+    "initial_symptom": "明明有卡但是开机一直失败显示没卡怎么办",
+    "symptom_normalized": "资源/容量类",
+    "turns": [
+      {"i": 0, "role": "User", "excerpt": "明明有卡但开机一直失败显示没卡"},
+      {"i": 1, "role": "Agent", "act": "request_artifact", "excerpt": "点击查看详情呢"},
+      {"i": 2, "role": "User", "excerpt": "说没卡，但创建notebook能看出来是有加速卡的"},
+      {"i": 3, "role": "Agent", "act": "verify", "excerpt": "好的，我这边看下"},
+      {"i": 4, "role": "Agent", "act": "confirm_finding+instruct", "excerpt": "目前看确实没资源了，建议等待或在其他区域创建"},
+      {"i": 5, "role": "User", "excerpt": "截图、是网卡了吗、没及时更新？"},
+      {"i": 6, "role": "Agent", "act": "hypothesize", "excerpt": "可能是卡了显示问题或网络原因创建慢", "verdict_later": "rejected"},
+      {"i": 7, "role": "User", "excerpt": "您截图的不是异构卡吗？我的是4090"},
+      {"i": 8, "role": "Agent", "act": "verify", "excerpt": "我看下"},
+      {"i": 9, "role": "Agent", "act": "confirm_finding", "excerpt": "确认了下，是资源不够，主要是CPU资源，所以显示还有卡，但提交不成功"},
+      {"i": 10, "role": "User", "excerpt": "怎么解决？"},
+      {"i": 11, "role": "Agent", "act": "instruct", "excerpt": "等待释放即可"},
+      {"i": 12, "role": "User", "excerpt": "谢谢"},
+      {"i": 13, "role": "Agent", "act": "closing", "excerpt": "您客气了"}
+    ],
+    "info_requested": [
+      {"type": "screenshot", "raw": "点击查看详情呢"},
+      {"type": "artifact_check", "raw": "我这边看下（后台查资源池）"}
+    ],
+    "hypotheses": [
+      {"raw": "显示问题或创建慢导致没卡", "verdict": "rejected"},
+      {"raw": "CPU资源不够（GPU有但CPU不足）", "verdict": "confirmed"}
+    ],
+    "root_cause": "资源池CPU紧张，导致GPU充足也提交失败",
+    "solution": "等待资源释放或更换区域",
+    "diagnosis_quality": {
+      "score": 4,
+      "rationale": "首假设错（怪到网络/显示），但被用户反问（不是异构卡是4090）后客服主动二次核查并修正到真根因",
+      "patterns_good": ["主动 verify 后给 confirm_finding", "被用户挑战后再次核查而非辩解"],
+      "patterns_bad": ["首问'点击查看详情'过于含糊，未指明要看什么", "首假设武断"]
+    },
+    "reusable_assets": {
+      "trigger_phrases": ["有卡但创建失败", "显示没卡", "明明有卡开机失败"],
+      "must_ask": ["报错截图", "实例规格（GPU型号）", "区域"],
+      "decision_branch": "GPU余量充足但创建失败 → 后台查 CPU/内存余量 → 资源池整体紧张则建议等待或换区"
+    }
+  },
+  {
+    "_dataset_idx": 4,
+    "category": "平台基础",
+    "is_diagnostic": true,
+    "is_transactional": false,
+    "initial_symptom": "422 Model Not Exist 龙虾出现这个错，更换大模型失败导致",
+    "symptom_normalized": "报错/异常类",
+    "turns": [
+      {"i": 0, "role": "User", "excerpt": "422 Model Not Exist 龙虾出现这个错"},
+      {"i": 2, "role": "Agent", "act": "verify", "excerpt": "我确认下"},
+      {"i": 3, "role": "Agent", "act": "instruct(doc_link)", "excerpt": "openclaw快速上手 + 调用API文档链接"},
+      {"i": 4, "role": "User", "excerpt": "现在工作不了，怎么快速恢复"},
+      {"i": 5, "role": "Agent", "act": "instruct", "excerpt": "可以重置下，重置后是刚部署的环境"},
+      {"i": 6, "role": "User", "excerpt": "如何操作"},
+      {"i": 7, "role": "Agent", "act": "instruct", "excerpt": "先进入休眠状态，然后会有重置按钮"},
+      {"i": 8, "role": "User", "excerpt": "操作过了可以恢复"},
+      {"i": 10, "role": "Agent", "act": "closing", "excerpt": "好的"}
+    ],
+    "info_requested": [],
+    "hypotheses": [],
+    "root_cause": "云端龙虾环境异常",
+    "solution": "进入休眠后点重置按钮",
+    "diagnosis_quality": {
+      "score": 2,
+      "rationale": "首发先甩两个文档链接而没诊断；用户主动提'怎么快速恢复'后客服才给出真正可行的重置方案。问诊几乎缺席",
+      "patterns_good": ["最终给出明确步骤（休眠→重置按钮）"],
+      "patterns_bad": ["首响应直接发链接，未理解'怎么解决'诉求", "未询问错误何时出现、是否复现"]
+    },
+    "reusable_assets": {
+      "trigger_phrases": ["422 Model Not Exist", "更换大模型失败", "龙虾用不了"],
+      "must_ask": ["何时出现", "操作了什么动作", "是否所有模型都报错"],
+      "decision_branch": "OpenClaw 环境异常 → 是否能进控制台 → 休眠→重置按钮"
+    }
+  },
+  {
+    "_dataset_idx": 263,
+    "category": "HPC高性能计算",
+    "is_diagnostic": true,
+    "is_transactional": false,
+    "initial_symptom": "source 环境出错: Module 'mpi/intelmpi/2021.3.0' conflicts",
+    "symptom_normalized": "环境配置类",
+    "turns": [
+      {"i": 0, "role": "User", "excerpt": "乌镇安好mtp环境，source环境出错"},
+      {"i": 1, "role": "User", "excerpt": "Module conflicts with currently loaded module"},
+      {"i": 2, "role": "Agent", "act": "instruct", "excerpt": "module purge"},
+      {"i": 3, "role": "Agent", "act": "instruct", "excerpt": "执行一下这个再source"},
+      {"i": 4, "role": "User", "excerpt": "脚本有什么错误吗，执行后报错"},
+      {"i": 5, "role": "Agent", "act": "request_artifact", "excerpt": "报什么错呢"},
+      {"i": 6, "role": "Agent", "act": "request_artifact", "excerpt": "作业号麻烦提供一下"},
+      {"i": 7, "role": "User", "excerpt": "35518900"},
+      {"i": 8, "role": "Agent", "act": "verify+instruct", "excerpt": "我这边改了一下脚本 lmp.sh，测试可以完成了"},
+      {"i": 9, "role": "User", "excerpt": "没有问题了"}
+    ],
+    "info_requested": [
+      {"type": "error_log", "raw": "报什么错呢"},
+      {"type": "job_id", "raw": "作业号麻烦提供一下"},
+      {"type": "artifact_check", "raw": "我这边改了一下脚本（直接看脚本）"}
+    ],
+    "hypotheses": [
+      {"raw": "module 冲突（已加载冲突模块）", "verdict": "confirmed"},
+      {"raw": "脚本本身参数有问题", "verdict": "confirmed"}
+    ],
+    "root_cause": "1) 环境已加载冲突 module；2) Slurm 脚本参数有误",
+    "solution": "module purge 清环境；客服直接修改了用户的脚本",
+    "diagnosis_quality": {
+      "score": 5,
+      "rationale": "症状关键字识别准确（Module conflicts → module purge）；第二个问题立刻索取作业号、亲自修改脚本验证",
+      "patterns_good": ["看到典型报错关键词直接给标准修复命令", "索取作业号后直接登后台改脚本+测试，闭环"],
+      "patterns_bad": []
+    },
+    "reusable_assets": {
+      "trigger_phrases": ["Module conflicts", "source 环境出错", "module load 报错"],
+      "must_ask": ["作业号", "完整报错"],
+      "decision_branch": "Module 冲突 → module purge → 重新 source/load"
+    }
+  },
+  {
+    "_dataset_idx": 65,
+    "category": "AI计算服务",
+    "is_diagnostic": true,
+    "is_transactional": false,
+    "initial_symptom": "核心区一直没法连国外的 huggingface github",
+    "symptom_normalized": "连接/网络类",
+    "turns": [
+      {"i": 0, "role": "User", "excerpt": "核心区连不上 huggingface/github"},
+      {"i": 2, "role": "Agent", "act": "decline+educate", "excerpt": "目前提供的是国内的网络"},
+      {"i": 4, "role": "Agent", "act": "instruct", "excerpt": "github 加代理 ghfast.top"},
+      {"i": 5, "role": "Agent", "act": "request_repro", "excerpt": "试一下这个代理还能用么"},
+      {"i": 6, "role": "User", "excerpt": "huggingface 呢"},
+      {"i": 7, "role": "Agent", "act": "verify", "excerpt": "确认一下"},
+      {"i": 8, "role": "Agent", "act": "clarify_symptom", "excerpt": "您这边用的 notebook 服务还是 shell"},
+      {"i": 9, "role": "User", "excerpt": "notebook"},
+      {"i": 10, "role": "Agent", "act": "handoff", "excerpt": "@婧妮 业务老师能否开通国际带宽"},
+      {"i": 11, "role": "User", "excerpt": "这个区域目前没有开通国外带宽"}
+    ],
+    "info_requested": [
+      {"type": "region", "raw": "（隐含：核心区）"},
+      {"type": "artifact_check", "raw": "您用的 notebook 还是 shell"}
+    ],
+    "hypotheses": [
+      {"raw": "区域未开通国际带宽", "verdict": "confirmed"}
+    ],
+    "root_cause": "该区域未开通国际带宽",
+    "solution": "github 用 ghfast.top 镜像；huggingface 走业务申请国际带宽",
+    "diagnosis_quality": {
+      "score": 4,
+      "rationale": "明确告知能力边界（不绕弯说『试试看』），先给可用 workaround（github 代理），再针对剩余诉求 handoff 给业务",
+      "patterns_good": ["对边界问题直接 decline + 提供 workaround", "升级前先澄清使用场景（notebook/shell）以判断方案"],
+      "patterns_bad": ["未在第一时间澄清是哪个区域"]
+    },
+    "reusable_assets": {
+      "trigger_phrases": ["连不上 huggingface", "github 慢/连不上", "外网访问"],
+      "must_ask": ["所在区域", "使用方式（notebook/shell）", "目标域名"],
+      "decision_branch": "外网访问受限 → 区域是否开国际带宽 → 否：给镜像/代理 + 升级业务"
+    }
+  },
+  {
+    "_dataset_idx": 478,
+    "category": "大模型API/OpenClaw",
+    "is_diagnostic": true,
+    "is_transactional": false,
+    "initial_symptom": "API在哪里查到（之后是401报错）",
+    "symptom_normalized": "操作不会用类→报错/异常类",
+    "turns": [
+      {"i": 1, "role": "User", "excerpt": "API在哪里查到"},
+      {"i": 2, "role": "Agent", "act": "instruct", "excerpt": "https://www.scnet.cn/ui/llm/apikeys 看下"},
+      {"i": 3, "role": "User", "excerpt": "我不会看代码，用网页"},
+      {"i": 6, "role": "Agent", "act": "request_artifact", "excerpt": "方便提供下账密吗，登陆查看下"},
+      {"i": 9, "role": "Agent", "act": "verify", "excerpt": "我这边可以操作 重置吗"},
+      {"i": 13, "role": "Agent", "act": "instruct", "excerpt": "操作 重置下云端龙虾，测试下"},
+      {"i": 16, "role": "User", "excerpt": "试着不管用，进去还是401"},
+      {"i": 22, "role": "Agent", "act": "confirm_finding", "excerpt": "测试可以了，不是模型问题"},
+      {"i": 24, "role": "Agent", "act": "hypothesize+instruct", "excerpt": "应该是平台负载过高，再试下，可多重启几次"}
+    ],
+    "info_requested": [
+      {"type": "account", "raw": "方便提供下账密"},
+      {"type": "artifact_check", "raw": "登账号测试"}
+    ],
+    "hypotheses": [
+      {"raw": "云端龙虾环境异常→重置", "verdict": "rejected(用户试无效)"},
+      {"raw": "平台负载过高", "verdict": "untested(给建议自行多试)"}
+    ],
+    "root_cause": "推测为平台后端负载过高，未严格证实",
+    "solution": "重置云端龙虾 + 多重启几次",
+    "diagnosis_quality": {
+      "score": 3,
+      "rationale": "诊断有顺序但根因未坐实；'平台负载过高'更像兜底说法。重置无效后没继续看日志验证",
+      "patterns_good": ["主动登账号验证（不是只让用户试）"],
+      "patterns_bad": ["重置无效后没二次诊断（如查后端 log/状态），直接归为'平台负载'"]
+    },
+    "reusable_assets": {
+      "trigger_phrases": ["401", "云端龙虾报错", "Model Not Exist"],
+      "must_ask": ["账号（用户授权后登）", "首次出现时间", "是否所有模型都报"],
+      "decision_branch": "OpenClaw 401 → 登账号试 → 重置 → 仍异常：查后端服务状态/负载（不要止步'多试几次'）"
+    }
+  },
+  {
+    "_dataset_idx": 669,
+    "category": "应用商城",
+    "is_diagnostic": true,
+    "is_transactional": false,
+    "initial_symptom": "本地小模型可以启动但连不上集群",
+    "symptom_normalized": "连接/网络类",
+    "turns": [
+      {"i": 0, "role": "User", "excerpt": "本地小模型可以启动"},
+      {"i": 2, "role": "Agent", "act": "clarify_symptom", "excerpt": "之前可以正常连接集群吗"},
+      {"i": 3, "role": "User", "excerpt": "之前可以，今天不行了"},
+      {"i": 4, "role": "Agent", "act": "request_artifact", "excerpt": "url您发下"},
+      {"i": 7, "role": "Agent", "act": "verify", "excerpt": "（确认是这个gateway）"},
+      {"i": 8, "role": "Agent", "act": "confirm_finding+instruct", "excerpt": "这边测试 gateway 可以正常连接，可能是本地的问题，您换个电脑使用您这个 gateway 提交试下"}
+    ],
+    "info_requested": [
+      {"type": "artifact_check", "raw": "url您发下（去测试gateway）"}
+    ],
+    "hypotheses": [
+      {"raw": "Gateway 服务端故障", "verdict": "rejected(测试可正常)"},
+      {"raw": "用户本地环境问题", "verdict": "untested(建议换电脑测试以隔离)"}
+    ],
+    "root_cause": "排除服务端，疑似本地环境/网络问题（待用户用替换法验证）",
+    "solution": "换台电脑用同一 gateway 提交以隔离本地因素",
+    "diagnosis_quality": {
+      "score": 5,
+      "rationale": "标准的'之前 vs 现在'+'服务端 vs 本地'隔离思路，先服务端验证排除，再让用户做隔离测试",
+      "patterns_good": ["先问'之前可不可以'区分新问题/历史问题", "先服务端测试排除自身问题再请用户做客户端隔离"],
+      "patterns_bad": []
+    },
+    "reusable_assets": {
+      "trigger_phrases": ["连不上集群", "gateway 连不上", "之前可以现在不行"],
+      "must_ask": ["之前是否可用", "gateway URL/账号", "本地能否 ping"],
+      "decision_branch": "客户端连不上服务 → 服务端自测 → 通过则换设备/网络隔离客户端因素"
+    }
+  },
+  {
+    "_dataset_idx": 721,
+    "category": "容器服务",
+    "is_diagnostic": true,
+    "is_transactional": false,
+    "initial_symptom": "ProxyError 下载 grib2 失败，是否容器没网/需开国际代理",
+    "symptom_normalized": "连接/网络类",
+    "turns": [
+      {"i": 0, "role": "User", "excerpt": "ProxyError ... osdf-director.osg-htc.org"},
+      {"i": 3, "role": "Agent", "act": "educate+request_artifact", "excerpt": "容器默认没网，提供账号和中心帮申请代理"},
+      {"i": 6, "role": "Agent", "act": "clarify_symptom", "excerpt": "您之前申请过吗"},
+      {"i": 12, "role": "Agent", "act": "instruct", "excerpt": "执行 source proxy_ai.sh 激活"},
+      {"i": 14, "role": "User", "excerpt": "激活了，跑代码还是一样"},
+      {"i": 16, "role": "Agent", "act": "request_artifact", "excerpt": "执行命令复制下"},
+      {"i": 22, "role": "Agent", "act": "clarify_symptom", "excerpt": "出现这个报错的命令是什么"},
+      {"i": 24, "role": "Agent", "act": "request_artifact", "excerpt": "查看您的容器需要登录账号"}
+    ],
+    "info_requested": [
+      {"type": "account", "raw": "账号名和使用中心"},
+      {"type": "command_output", "raw": "执行命令复制下"},
+      {"type": "account", "raw": "登录账号查看"}
+    ],
+    "hypotheses": [
+      {"raw": "容器无网（需要代理）", "verdict": "partially_confirmed(给了代理但仍报错)"},
+      {"raw": "缺 ecCodes 库（reason 提到）", "verdict": "confirmed_external"}
+    ],
+    "root_cause": "代理需激活 + 缺少 ecCodes 库",
+    "solution": "source proxy_ai.sh 激活 + 安装 ecCodes",
+    "diagnosis_quality": {
+      "score": 4,
+      "rationale": "代理路径排查清晰；用户'激活后仍报错'后追问执行命令并要求登账号，递进合理",
+      "patterns_good": ["先问'之前申请过吗'避免重复申请", "用户复述'还是一样'后追问具体命令而非重复方案"],
+      "patterns_bad": ["首响应'容器默认没网'给得有点武断（未先看具体报错域名）"]
+    },
+    "reusable_assets": {
+      "trigger_phrases": ["ProxyError", "Max retries exceeded", "下载外网失败"],
+      "must_ask": ["账号+中心", "之前是否申请过代理", "完整执行命令", "目标域名"],
+      "decision_branch": "容器外网失败 → 是否申请过代理 → 否:申请；是:source 激活 → 仍失败:登账号 + 看缺库"
+    }
+  },
+  {
+    "_dataset_idx": 386,
+    "category": "AIHub/AI社区",
+    "is_diagnostic": true,
+    "is_transactional": false,
+    "initial_symptom": "超算上下载东西速度很慢",
+    "symptom_normalized": "性能/卡顿类",
+    "turns": [
+      {"i": 1, "role": "User", "excerpt": "超算上下载东西速度很慢"},
+      {"i": 4, "role": "Agent", "act": "educate", "excerpt": "网速有波动，下午拥挤；国外网络也会波动"},
+      {"i": 6, "role": "Agent", "act": "request_artifact", "excerpt": "您下载链接是什么呢"},
+      {"i": 7, "role": "User", "excerpt": "ollama模型"},
+      {"i": 8, "role": "Agent", "act": "instruct", "excerpt": "看下平台上有没有镜像"},
+      {"i": 10, "role": "Agent", "act": "educate", "excerpt": "直接拉取外网比较慢"},
+      {"i": 12, "role": "Agent", "act": "instruct", "excerpt": "可以在ai社区看下"},
+      {"i": 21, "role": "Agent", "act": "clarify_symptom", "excerpt": "您使用的是notebook吗"}
+    ],
+    "info_requested": [
+      {"type": "package_name", "raw": "下载链接是什么"},
+      {"type": "artifact_check", "raw": "您使用的是notebook吗"}
+    ],
+    "hypotheses": [
+      {"raw": "外网下载慢（属正常现象）", "verdict": "confirmed"},
+      {"raw": "平台镜像可加速", "verdict": "confirmed"}
+    ],
+    "root_cause": "外网带宽限制，下载源远",
+    "solution": "改用平台 AI 社区上的镜像/模型",
+    "diagnosis_quality": {
+      "score": 4,
+      "rationale": "先科普背景再追问下载内容，转化为'用平台镜像'的解决思路；给用户做了认知升级",
+      "patterns_good": ["科普+定位结合：先解释普遍原因，再问具体下载内容定位是否有平台替代"],
+      "patterns_bad": ["未给出查 AIHub 镜像的具体路径，导致用户'没找到'后多轮反复"]
+    },
+    "reusable_assets": {
+      "trigger_phrases": ["下载慢", "网速慢", "ollama 拉取慢"],
+      "must_ask": ["下载源/链接", "运行环境（notebook/容器/HPC）"],
+      "decision_branch": "外网下载慢 → 是否有平台镜像 → 是:走 AI 社区镜像；否:换时段或平台带宽申请"
+    }
+  },
+  {
+    "_dataset_idx": 81,
+    "category": "SClaw工作流",
+    "is_diagnostic": false,
+    "is_transactional": true,
+    "initial_symptom": "活动送 Tokens 没收到（薅2/3千万差额）",
+    "symptom_normalized": "权限/账号类→产品咨询类",
+    "turns": [
+      {"i": 0, "role": "User", "excerpt": "活动送Tokens没收到"},
+      {"i": 1, "role": "Agent", "act": "instruct", "excerpt": "https://www.scnet.cn/ui/llm 看下"},
+      {"i": 7, "role": "Agent", "act": "clarify_symptom", "excerpt": "云端部署了吗"},
+      {"i": 9, "role": "Agent", "act": "instruct", "excerpt": "再看下是否到账"},
+      {"i": 10, "role": "Agent", "act": "handoff", "excerpt": "明天白天再问，运营下班了"},
+      {"i": 11, "role": "Agent", "act": "decline", "excerpt": "资源问题需要那边确认，我们是技术支持"},
+      {"i": 13, "role": "Agent", "act": "instruct", "excerpt": "需要申请SClaw测试"},
+      {"i": 18, "role": "Agent", "act": "educate", "excerpt": "申请通过后新版客户端才能用SClaw"}
+    ],
+    "info_requested": [
+      {"type": "artifact_check", "raw": "云端部署了吗"}
+    ],
+    "hypotheses": [],
+    "root_cause": "Token 是否到账需运营确认；客户端需申请通过才能装",
+    "solution": "明日转运营核查 + 申请 SClaw 测试",
+    "diagnosis_quality": {
+      "score": 3,
+      "rationale": "属于流程咨询而非故障诊断；客服明确边界(技术 vs 运营)处理得体，但前期回答较碎",
+      "patterns_good": ["明确告知职责边界(技术 vs 运营)避免越界承诺", "对'通过怎么通知'用反问引导（您填了手机号邮箱吗）"],
+      "patterns_bad": ["首响应'啥意思'语气过于随意"]
+    },
+    "reusable_assets": {
+      "trigger_phrases": ["Tokens 没到账", "活动赠送", "薅羊毛"],
+      "must_ask": ["哪一笔活动", "操作步骤完成情况"],
+      "decision_branch": "活动赠送类咨询 → 技术 or 运营 → 跨界则 handoff，不要承诺到账时间"
+    }
+  },
+  {
+    "_dataset_idx": 162,
+    "category": "平台基础",
+    "is_diagnostic": false,
+    "is_transactional": true,
+    "initial_symptom": "购买 FLUENT 安装服务",
+    "symptom_normalized": "产品咨询类(交易类)",
+    "turns": [
+      {"i": 0, "role": "User", "excerpt": "（系统通知：用户购买 FLUENT 安装服务）"},
+      {"i": 1, "role": "Agent", "act": "boilerplate", "excerpt": "（声明模板）"},
+      {"i": 3, "role": "Agent", "act": "boilerplate", "excerpt": "申请已通过审批"},
+      {"i": 4, "role": "Agent", "act": "instruct", "excerpt": "fluent 使用 ib 通信，命令行加 -pinfiniband 3ddp"},
+      {"i": 5, "role": "Agent", "act": "educate", "excerpt": "5-10万网格/核心，建议核数选择"}
+    ],
+    "info_requested": [],
+    "hypotheses": [],
+    "root_cause": "N/A（交易+使用指南）",
+    "solution": "N/A",
+    "diagnosis_quality": {
+      "score": null,
+      "rationale": "纯交易+使用提示，没有诊断过程；建议在数据集中标记 is_diagnostic=false 以避免污染问诊统计",
+      "patterns_good": [],
+      "patterns_bad": []
+    },
+    "reusable_assets": {
+      "trigger_phrases": [],
+      "must_ask": [],
+      "decision_branch": null,
+      "notes": "应作为'非诊断'样本剔除出问诊分析；但其中的'fluent 集群 ib 设置'是高价值知识片段，可单独沉淀到知识库"
+    }
+  }
+]
